@@ -5,11 +5,12 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
-class User
+class User implements UserInterface
 {
     /**
      * @ORM\Id()
@@ -19,94 +20,49 @@ class User
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $firstName;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $lastName;
-
-    /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=180, unique=true)
      */
     private $email;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="json")
      */
-    private $phone;
+    private $roles = [];
+
+    /**
+     * @var string The hashed password
+     * @ORM\Column(type="string")
+     */
+    private $password;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $isGraduated;
+    private $is_graduated;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $hasCar;
+    private $has_car;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Grade", mappedBy="rider", orphanRemoval=true)
-     */
-    private $grades;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Role")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $role;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Session", inversedBy="users")
-     */
-    private $sessions;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\School", inversedBy="users")
+     * @ORM\ManyToOne(targetEntity="App\Entity\School")
      */
     private $school;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\RidingSchool", inversedBy="teachers")
+     * @ORM\ManyToMany(targetEntity="App\Entity\RidingSchool")
      */
     private $teacher;
 
     public function __construct()
     {
-        $this->grades = new ArrayCollection();
-        $this->sessions = new ArrayCollection();
+        $this->teacher = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getFirstName(): ?string
-    {
-        return $this->firstName;
-    }
-
-    public function setFirstName(string $firstName): self
-    {
-        $this->firstName = $firstName;
-
-        return $this;
-    }
-
-    public function getLastName(): ?string
-    {
-        return $this->lastName;
-    }
-
-    public function setLastName(string $lastName): self
-    {
-        $this->lastName = $lastName;
-
-        return $this;
     }
 
     public function getEmail(): ?string
@@ -121,107 +77,87 @@ class User
         return $this;
     }
 
-    public function getPhone(): ?int
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUsername(): string
     {
-        return $this->phone;
+        return (string) $this->email;
     }
 
-    public function setPhone(?int $phone): self
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
     {
-        $this->phone = $phone;
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
 
         return $this;
     }
 
-    public function getIsGraduated(): ?bool
+    /**
+     * @see UserInterface
+     */
+    public function getPassword(): string
     {
-        return $this->isGraduated;
+        return (string) $this->password;
     }
 
-    public function setIsGraduated(?bool $isGraduated): self
+    public function setPassword(string $password): self
     {
-        $this->isGraduated = $isGraduated;
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getSalt()
+    {
+        // not needed when using the "bcrypt" algorithm in security.yaml
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    public function getIsGraduated(): ?bool
+    {
+        return $this->is_graduated;
+    }
+
+    public function setIsGraduated(?bool $is_graduated): self
+    {
+        $this->is_graduated = $is_graduated;
 
         return $this;
     }
 
     public function getHasCar(): ?bool
     {
-        return $this->hasCar;
+        return $this->has_car;
     }
 
-    public function setHasCar(?bool $hasCar): self
+    public function setHasCar(?bool $has_car): self
     {
-        $this->hasCar = $hasCar;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Grade[]
-     */
-    public function getGrades(): Collection
-    {
-        return $this->grades;
-    }
-
-    public function addGrade(Grade $grade): self
-    {
-        if (!$this->grades->contains($grade)) {
-            $this->grades[] = $grade;
-            $grade->setRider($this);
-        }
-
-        return $this;
-    }
-
-    public function removeGrade(Grade $grade): self
-    {
-        if ($this->grades->contains($grade)) {
-            $this->grades->removeElement($grade);
-            // set the owning side to null (unless already changed)
-            if ($grade->getRider() === $this) {
-                $grade->setRider(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getRole(): ?Role
-    {
-        return $this->role;
-    }
-
-    public function setRole(?Role $role): self
-    {
-        $this->role = $role;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Session[]
-     */
-    public function getSessions(): Collection
-    {
-        return $this->sessions;
-    }
-
-    public function addSession(Session $session): self
-    {
-        if (!$this->sessions->contains($session)) {
-            $this->sessions[] = $session;
-        }
-
-        return $this;
-    }
-
-    public function removeSession(Session $session): self
-    {
-        if ($this->sessions->contains($session)) {
-            $this->sessions->removeElement($session);
-        }
+        $this->has_car = $has_car;
 
         return $this;
     }
@@ -238,14 +174,28 @@ class User
         return $this;
     }
 
-    public function getTeacher(): ?RidingSchool
+    /**
+     * @return Collection|RidingSchool[]
+     */
+    public function getTeacher(): Collection
     {
         return $this->teacher;
     }
 
-    public function setTeacher(?RidingSchool $teacher): self
+    public function addTeacher(RidingSchool $teacher): self
     {
-        $this->teacher = $teacher;
+        if (!$this->teacher->contains($teacher)) {
+            $this->teacher[] = $teacher;
+        }
+
+        return $this;
+    }
+
+    public function removeTeacher(RidingSchool $teacher): self
+    {
+        if ($this->teacher->contains($teacher)) {
+            $this->teacher->removeElement($teacher);
+        }
 
         return $this;
     }

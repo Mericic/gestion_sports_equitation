@@ -26,11 +26,6 @@ class Grade
      */
     private $value;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="grades")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $rider;
 
     public function getId(): ?int
     {
@@ -60,16 +55,5 @@ class Grade
 
         return $this;
     }
-
-    public function getRider(): ?User
-    {
-        return $this->rider;
-    }
-
-    public function setRider(?User $rider): self
-    {
-        $this->rider = $rider;
-
-        return $this;
-    }
+    
 }
