@@ -1,0 +1,267 @@
+{% extends 'administration/layout.html.twig' %}
+
+{% block title %}Gestion Utilisateurs{% endblock %}
+
+{% block body %}
+    <p>coucou</p>
+
+
+    <div class="container-fluid" style="border: 1px solid black; margin-bottom: 20px; padding: 5px;">
+        Recherche par nom/Prenom, Role, école, numéro étudiant
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="inputPassword" class="col-sm-2 col-form-label">Nom/Prenom</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="nom_prenom" placeholder="Nom/Prenom">
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="select_role" class="col-sm-2 col-form-label">Role</label>
+                <div class="col-sm-10">
+                    <select id="select_role" class="col-sm form-control">
+                        <option>Role 1</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="num_etudiant" class="col-sm-2 col-form-label">numéro étudiant</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="num_etudiant" placeholder="numéro étudiant">
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="select_ecole" class="col-sm-2 col-form-label">école</label>
+                <div class="col-sm-10">
+                    <select id="select_ecole" class="col-sm form-control">
+                        <option>école 1</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid" style="border: 1px solid black">
+
+        <p style="border-bottom: 1px solid black">Liste des Utilistateurs</p>
+        <div class="row" style="overflow-y: scroll; height: 500px">
+            <table id="searchTable" class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Nom Prenom</th>
+                    <th scope="col">Type Utilisateur</th>
+                    <th scope="col">&nbsp;</th>                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr id="user_number_{{ user.id }}">
+                            <td>{{ user.firstName }} {{ user.lastName }}</td>
+                            <td>{{ user.roles[0] }}</td>
+                            <td>
+                                <button class="btn btn-dark"
+                                        data-toggle="modal"
+                                        data-target="#ModalEditUser"
+                                        data-id="{{ user.id }}"
+                                        data-departement=""
+                                        data-firstname="{{ user.firstName }}"
+                                        data-lastname="{{ user.lastName }}"
+                                        data-role="{{ user.roles[0] }}"
+                                        data-email="{{ user.email }}"
+                                        data-phone=""
+                                        data-studentnumber=""
+                                        data-evaluated="0">Editer</button>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <p>no User Found</p>
+                    {% endfor %}
+
+               </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="container-fluid" style="border: 1px solid black; margin-bottom: 40px; margin-top: 10px;">
+        <p style="border-bottom: 1px solid black">Créer un Utilisateur</p>
+        <div style="border: 1px solid black; padding: 4px; margin: 3px;">
+            <div class="row" style="max-height: 600px">
+            </div>
+                {{ form_start(addUserForm) }}
+                    {{ form_widget(addUserForm) }}
+                {{ form_end(addUserForm) }}
+
+                {#<div class="row" style="margin:0;">
+                    <div class="col-md-6" style="padding: 1px">
+                        <div class="row">
+                            <label class="col-sm-5">Nom : *</label>
+                            <div class="col-sm-7">
+                                <input placeholder="Nom" class="col-sm form-control" type="text" name="last_Name" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-5">Prénom : *</label>
+                            <div class="col-sm-7">
+                                <input placeholder="Prenom" class="col-sm form-control" type="text" name="first_Name" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-5">Email Universitaire : *</label>
+                            <div class="col-sm-7">
+                                <input placeholder="prenom.nom@univ-lyon.fr" class="col-sm form-control" name="email" type="email" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-5">Numéro Téléphone</label>
+                            <div class="col-sm-7">
+                                <input placeholder="0710203040" class="col-sm form-control" name="phone" value="">
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="col-md-6" style="padding: 1px">
+                        <div class="row">
+                            <label class="col-sm-5">Email Perso :</label>
+                            <div class="col-sm-7">
+                                <input placeholder="email@gmail.com" class="col-sm form-control" name="p_Email" type="email" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-5">Type Utilisateur : *</label>
+                            <div class="col-sm-7">
+                                <select class="col-sm form-control" name="role" id="role">
+                                    <option value="Etudiant">Etudiant</option>
+                                    <option value="Enseignant">Enseignant</option>
+                                    <option value="Administrateur">Administrateur</option>
+                                    <option value="SuperAdministrateur">SuperAdministrateur</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="infosSuppl">
+                            <div class="row">
+                                <label class="col-sm-5">Numéro Etudiant</label>
+                                <div class="col-sm-7">
+                                    <input placeholder="11234567" type="number" class="col-sm form-control" name="student_Number" value="">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <label class="col-sm-5">Evalué ?</label>
+                                <div class="col-sm-7">
+                                    <select class="col-sm form-control" name="evaluated">
+                                        <option value="0">Non</option>
+                                        <option value="1">Oui</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <div id="div_choix_departement" class="row">
+                                    <label class="col-sm-5">école</label>
+                                    <div class="col-sm-7">
+                                        <select class="col-sm form-control" name="choix_departement" id="choix_departement">
+                                           {% for school in schools %}
+                                                <option value="{{ school.id }}">{{ school.name }}</option>
+                                            {% else %}
+                                                <option value="0">Aucune école trouvée</option>
+                                            {% endfor %}
+                                        </select>
+
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <br>
+                        <input type="submit" class="btn btn-dark" value="Enregistrer Utilisateur">
+                    </div>
+                </div>#}
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="ModalEditUser">
+        <div class="modal-dialog  modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editer utilisateur</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(updateUser) }}
+                        {{ form_widget(updateUser) }}
+                    {{ form_end(updateUser) }}
+                    <div id="errorModalUpdate" class="alert alert-danger" role="alert" style="display: none">
+                        Error Message
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="deleteUser" data-idUser="">Delete User</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #update_user div, #create_user div{
+            width:50%;
+            display: inline-block;
+        }
+    </style>
+    {% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function() {
+            $('#deleteUser').on('click', function(e){
+
+                var button = $('#deleteUser')
+                const id = button.attr('data-idUser')
+                $.ajax({
+                    url: "{{ url('del_User') }}/"+id,
+                    type: 'DELETE',
+                    dataType: 'json',
+                    success: function(data) {
+                        if(data['return']==true){
+                            $('#user_number_'+id).html('');
+                            $('#ModalEditUser').modal('hide');
+                        }else{
+                            $('#errorModalUpdate').html('Une erreur est survenue : </br>'+data['return'])
+                            $('#errorModalUpdate').show();
+                        }
+                    },
+                    error: function(data){
+                        $('#errorModalUpdate').html('Une erreur est survenue : </br>'+data)
+                        $('#errorModalUpdate').show();
+                    }
+                });
+
+            })
+            $('#ModalEditUser').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget) // Button that triggered the modal
+                var places_libres = button.data('places_libres') // Extract info from data-* attributes
+                var jour = button.data('jour') // Extract info from data-* attributes
+                var niveau = button.data('niveau') // Extract info from data-* attributes
+                var heure = button.data('heure') // Extract info from data-* attributes
+                var id = button.data('id') // Extract info from data-* attributes
+                // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+                // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+                var modal = $(this)
+                console.log(id);
+
+                modal.find('#jour').text(jour)
+                modal.find('#placesLibres').text(places_libres)
+                modal.find('#niveau').text(niveau)
+                modal.find('#heure').text(heure)
+                modal.find('#idModal').val(id)
+                modal.find('#id_reprise').val(id)
+                modal.find('#deleteUser').attr('data-idUser', id)
+            })
+        })
+
+    </script>
+{% endblock %}

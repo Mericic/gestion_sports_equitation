@@ -5,10 +5,12 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
  */
 class User implements UserInterface
 {
@@ -46,14 +48,29 @@ class User implements UserInterface
     private $has_car;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\School")
-     */
-    private $school;
-
-    /**
      * @ORM\ManyToMany(targetEntity="App\Entity\RidingSchool")
      */
     private $teacher;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $firstName;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $lastName;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $phoneNumber;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\School")
+     */
+    private $School;
 
     public function __construct()
     {
@@ -162,17 +179,6 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getSchool(): ?School
-    {
-        return $this->school;
-    }
-
-    public function setSchool(?School $school): self
-    {
-        $this->school = $school;
-
-        return $this;
-    }
 
     /**
      * @return Collection|RidingSchool[]
@@ -196,6 +202,54 @@ class User implements UserInterface
         if ($this->teacher->contains($teacher)) {
             $this->teacher->removeElement($teacher);
         }
+
+        return $this;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(string $firstName): self
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): self
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?int
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(?int $phoneNumber): self
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    public function getSchool(): ?School
+    {
+        return $this->School;
+    }
+
+    public function setSchool(?School $School): self
+    {
+        $this->School = $School;
 
         return $this;
     }

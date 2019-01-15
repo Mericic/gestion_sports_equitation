@@ -1,3 +1,34 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+
+index:
+    path: /
+    controller: App\Controller\MainController::index
+
+rider:
+    path: /rider
+    controller: App\Controller\MainController::index
+
+app_logout :
+    path: /logout
+
+admin_droit:
+    path: /admin/gestion_droits
+    controller: App\Controller\Administration\AdminController::gestion_droits
+
+admin_base:
+    path: /admin/gestion_base
+    controller: App\Controller\Administration\AdminController::gestion_base
+
+admin_users:
+    path: /admin/gestion_utilisateurs
+    controller: App\Controller\Administration\AdminController::gestion_utilisateurs
+
+add_user:
+    path: /admin/gestion_utilisateurs/addUser
+    controller: App\Controller\Administration\AdminController::add_user
+
+admin_sessions:
+    path: /admin/gestion_sessions
+    controller: App\Controller\Administration\AdminController::gestion_sessions

@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+
+
+    <div class="container" style="margin-top: 70px;">
+        <div style="text-align: center" class="offset-md-3 col-md-6">
+            <h3>Register</h3>
+            {{ form_start(registrationForm) }}
+            <div id="registration_form">
+                {{ form_row(registrationForm.firstName) }}
+                {{ form_row(registrationForm.lastName) }}
+                {{ form_row(registrationForm.email) }}
+                {{ form_row(registrationForm.phoneNumber) }}
+                {{ form_row(registrationForm.school) }}
+                {{ form_row(registrationForm.is_Graduated) }}
+                {{ form_row(registrationForm.has_Car) }}
+                {{ form_row(registrationForm.plainPassword) }}
+            </div>
+
+                <button class="btn">S'inscrire</button>
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+<style>
+    #registration_form div{
+        width:50%;
+        display:inline-block;
+    }
+</style>
+{% endblock %}
