@@ -2,8 +2,11 @@
 
 namespace App\Controller\Administration;
 
+use App\Entity\RidingSchool;
 use App\Entity\School;
+use App\Entity\Session;
 use App\Entity\User;
+use App\Form\CreateSessionType;
 use App\Form\CreateUserType;
 use App\Form\UpdateUserType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -79,6 +82,10 @@ class AdminController extends AbstractController
         );
     }
 
+    /**
+     * @param Request $request
+     * @Route("/admin/gestion_utilisateurs/addUser", name="add_user", methods={"POST"})
+     */
     public function add_user(Request $request, UserPasswordEncoderInterface $passwordEncoder){
 
         $form = $this->createForm(CreateUserType::class);
@@ -124,8 +131,45 @@ class AdminController extends AbstractController
     }
 
     public function gestion_sessions(){
-        return $this->render('administration/gestion_session.html.twig', [
-
+        $ridingSchools = $this->getDoctrine()
+            ->getRepository(RidingSchool::class)
+            ->findAll();
+        $sessions = $this->getDoctrine()
+            ->getRepository(Session::class)
+            ->findAll();
+        $createSessionForm = $this->createForm(CreateSessionType::class, null, ['action'=>$this->generateUrl('add_session')]);
+        return $this->render('administration/gestion_seance.html.twig', [
+            'createSessionForm'=>$createSessionForm->createView(),
+            'sessions'=>$sessions,
+            'ridingSchools'=>$ridingSchools
         ]);
+    }
+
+
+    /**
+     * @param Request $request
+     * @Route("/admin/gestion_sessions/add_session", name="add_session", methods={"POST"})
+     */
+    public function add_session(Request $request){
+        $form = $this->createForm(CreateSessionType::class);
+//        dd($request);
+
+        $form->handleRequest($request);
+        if($form->isSubmitted()){
+            $session = new Session();
+            $session = $form->getData();
+//            dd($session);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($session);
+            $entityManager->flush();
+            return $this->redirectToRoute('admin_sessions');
+        }
+        else{
+            dd($form, $request);
+        }
+    }
+
+    public function del_session(){
+
     }
 }

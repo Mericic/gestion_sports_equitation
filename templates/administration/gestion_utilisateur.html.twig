@@ -3,8 +3,6 @@
 {% block title %}Gestion Utilisateurs{% endblock %}
 
 {% block body %}
-    <p>coucou</p>
-
 
     <div class="container-fluid" style="border: 1px solid black; margin-bottom: 20px; padding: 5px;">
         Recherche par nom/Prenom, Role, école, numéro étudiant
@@ -85,7 +83,7 @@
         <div style="border: 1px solid black; padding: 4px; margin: 3px;">
             <div class="row" style="max-height: 600px">
             </div>
-                {{ form_start(addUserForm) }}
+                    {{ form_start(addUserForm) }}
                     {{ form_widget(addUserForm) }}
                 {{ form_end(addUserForm) }}
 

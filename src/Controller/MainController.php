@@ -24,11 +24,11 @@ class MainController extends AbstractController
             //a) case role=cavalier
             //b) case role=enseignant
             //c) case role=administration
-//        $user = $this->getUser();
-//        $user->setRoles(['ROLE_SUPERADMIN']);
-//        $entityManager = $this->getDoctrine()->getManager();
-//        $entityManager->persist($user);
-//        $entityManager->flush();
+/*        $user = $this->getUser();
+        $user->setRoles(['ROLE_SUPERADMIN']);
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($user);
+        $entityManager->flush();*/
 
 //        dd($this->getUser()->getRoles()[0]);
         switch($this->getUser()->getRoles()[0]){

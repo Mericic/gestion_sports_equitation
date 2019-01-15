@@ -25,10 +25,6 @@ admin_users:
     path: /admin/gestion_utilisateurs
     controller: App\Controller\Administration\AdminController::gestion_utilisateurs
 
-add_user:
-    path: /admin/gestion_utilisateurs/addUser
-    controller: App\Controller\Administration\AdminController::add_user
-
 admin_sessions:
     path: /admin/gestion_sessions
     controller: App\Controller\Administration\AdminController::gestion_sessions

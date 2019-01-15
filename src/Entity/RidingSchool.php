@@ -38,9 +38,15 @@ class RidingSchool
      */
     private $teachers;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Session", mappedBy="ridingSchool", orphanRemoval=true)
+     */
+    private $sessions;
+
     public function __construct()
     {
         $this->teachers = new ArrayCollection();
+        $this->sessions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -109,6 +115,37 @@ class RidingSchool
             // set the owning side to null (unless already changed)
             if ($teacher->getTeacher() === $this) {
                 $teacher->setTeacher(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Session[]
+     */
+    public function getSessions(): Collection
+    {
+        return $this->sessions;
+    }
+
+    public function addSession(Session $session): self
+    {
+        if (!$this->sessions->contains($session)) {
+            $this->sessions[] = $session;
+            $session->setRidingSchool($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSession(Session $session): self
+    {
+        if ($this->sessions->contains($session)) {
+            $this->sessions->removeElement($session);
+            // set the owning side to null (unless already changed)
+            if ($session->getRidingSchool() === $this) {
+                $session->setRidingSchool(null);
             }
         }
 

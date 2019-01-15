@@ -1,0 +1,42 @@
+{% extends 'administration/layout.html.twig' %}
+
+{% block title %}Gestion Utilisateurs{% endblock %}
+
+{% block body %}
+    <p>Coucou seances</p>
+
+    <div class="container-fluid" style="border: 1px solid black; margin-bottom: 20px; padding: 5px;">
+        Seances créées
+        <div style=" max-height: 500px; overflow-y: auto;">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+        {% for ridingSchool in ridingSchools %}
+                    <li class="nav-item">
+                        <a class="nav-link active" id="home-tab" data-toggle="tab"
+                           href="#riding_school_tab_{{ ridingSchool.id }}" role="tab" aria-controls="{{ ridingSchool.name }}">
+                            {{ ridingSchool.name }}
+                        </a>
+                    </li>
+        {% endfor %}
+                </ul>
+        {% for ridingSchool in ridingSchools %}
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade" id="riding_school_tab_{{ ridingSchool.id }}" role="tabpanel" aria-labelledby="profile-tab">
+                        {% for session in ridingSchool.sessions %}
+                            {{ session.name }}
+                        {% endfor %}
+                    </div>
+                </div>
+
+        {% endfor %}
+        </div>
+
+    </div>
+    <div class="container-fluid" style="border: 1px solid black; margin-bottom: 20px; padding: 5px;">
+        Creation de Séance
+        {{ form_start(createSessionForm) }}
+        {{ form_widget(createSessionForm) }}
+        {{ form_end(createSessionForm) }}
+    </div>
+
+
+{% endblock body %}

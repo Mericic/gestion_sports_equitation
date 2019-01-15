@@ -24,7 +24,7 @@ class Session
     private $day;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="datetime")
      */
     private $hour;
 
@@ -37,6 +37,18 @@ class Session
      * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="sessions")
      */
     private $users;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $name;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\RidingSchool", inversedBy="sessions")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $ridingSchool;
+
 
     public function __construct()
     {
@@ -60,12 +72,12 @@ class Session
         return $this;
     }
 
-    public function getHour(): ?string
+    public function getHour(): ?\DateTimeInterface
     {
         return $this->hour;
     }
 
-    public function setHour(string $hour): self
+    public function setHour(\DateTimeInterface $hour): self
     {
         $this->hour = $hour;
 
@@ -111,4 +123,29 @@ class Session
 
         return $this;
     }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getRidingSchool(): ?RidingSchool
+    {
+        return $this->ridingSchool;
+    }
+
+    public function setRidingSchool(?RidingSchool $ridingSchool): self
+    {
+        $this->ridingSchool = $ridingSchool;
+
+        return $this;
+    }
+
 }
