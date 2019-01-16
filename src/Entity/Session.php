@@ -24,11 +24,6 @@ class Session
     private $day;
 
     /**
-     * @ORM\Column(type="datetime")
-     */
-    private $hour;
-
-    /**
      * @ORM\Column(type="text", nullable=true)
      */
     private $description;
@@ -49,10 +44,31 @@ class Session
      */
     private $ridingSchool;
 
+    /**
+     * @ORM\Column(type="time")
+     */
+    private $hour;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Level", inversedBy="sessions")
+     */
+    private $level;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $number_places;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $price;
+
 
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->level = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -68,18 +84,6 @@ class Session
     public function setDay(string $day): self
     {
         $this->day = $day;
-
-        return $this;
-    }
-
-    public function getHour(): ?\DateTimeInterface
-    {
-        return $this->hour;
-    }
-
-    public function setHour(\DateTimeInterface $hour): self
-    {
-        $this->hour = $hour;
 
         return $this;
     }
@@ -144,6 +148,68 @@ class Session
     public function setRidingSchool(?RidingSchool $ridingSchool): self
     {
         $this->ridingSchool = $ridingSchool;
+
+        return $this;
+    }
+
+    public function getHour(): ?\DateTimeInterface
+    {
+        return $this->hour;
+    }
+
+    public function setHour(\DateTimeInterface $hour): self
+    {
+        $this->hour = $hour;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Level[]
+     */
+    public function getLevel(): Collection
+    {
+        return $this->level;
+    }
+
+    public function addLevel(Level $level): self
+    {
+        if (!$this->level->contains($level)) {
+            $this->level[] = $level;
+        }
+
+        return $this;
+    }
+
+    public function removeLevel(Level $level): self
+    {
+        if ($this->level->contains($level)) {
+            $this->level->removeElement($level);
+        }
+
+        return $this;
+    }
+
+    public function getNumberPlaces(): ?int
+    {
+        return $this->number_places;
+    }
+
+    public function setNumberPlaces(int $number_places): self
+    {
+        $this->number_places = $number_places;
+
+        return $this;
+    }
+
+    public function getPrice(): ?string
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?string $price): self
+    {
+        $this->price = $price;
 
         return $this;
     }

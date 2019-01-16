@@ -1,36 +1,121 @@
 {% extends 'administration/layout.html.twig' %}
 
-{% block title %}Gestion Utilisateurs{% endblock %}
+{% block title %}Gestion Séances{% endblock %}
 
 {% block body %}
-    <p>Coucou seances</p>
-
     <div class="container-fluid" style="border: 1px solid black; margin-bottom: 20px; padding: 5px;">
         Seances créées
         <div style=" max-height: 500px; overflow-y: auto;">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
         {% for ridingSchool in ridingSchools %}
                     <li class="nav-item">
-                        <a class="nav-link active" id="home-tab" data-toggle="tab"
+                        <a class="nav-link {% if loop.index==1 %}active{% endif %}" id="home-tab" data-toggle="tab"
                            href="#riding_school_tab_{{ ridingSchool.id }}" role="tab" aria-controls="{{ ridingSchool.name }}">
                             {{ ridingSchool.name }}
                         </a>
                     </li>
         {% endfor %}
-                </ul>
-        {% for ridingSchool in ridingSchools %}
-                <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade" id="riding_school_tab_{{ ridingSchool.id }}" role="tabpanel" aria-labelledby="profile-tab">
-                        {% for session in ridingSchool.sessions %}
-                            {{ session.name }}
-                        {% endfor %}
-                    </div>
-                </div>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                {% for ridingSchool in ridingSchools %}
+                        <div class="tab-pane fade {% if loop.index==1 %}active show{% endif %}" id="riding_school_tab_{{ ridingSchool.id }}" role="tabpanel" aria-labelledby="profile-tab">
 
-        {% endfor %}
+                            <table class="table">
+                                <tbody>
+                                <tr>
+                                    <td scope="col">#</td>
+                                    <td scope="col" style="width:16%">Lundi</td>
+                                    <td scope="col" style="width:16%">Mardi</td>
+                                    <td scope="col" style="width:16%">Mercredi</td>
+                                    <td scope="col" style="width:16%">Jeudi</td>
+                                    <td scope="col" style="width:16%">Vendredi</td>
+                                    <td scope="col" style="width:16%">Samedi</td>
+                                </tr>
+                                {% for i in 8..21 %}
+                                <tr>
+                                    <td>{{ i }} h</td>
+                                    {% for day in days %}
+                                        <td>
+                                            {% for session in ridingSchool.sessions %}
+                                                {##}
+                                                {% if session.day == day and session.hour|date('H:i')|slice(0,2)==i %}
+                                                    <button class="btn btn-light"
+                                                            data-toggle="modal" data-target="#repriseModal"
+                                                            data-jour="{{ session.day }}" data-heure="{{ session.hour|date('H:i') }}"
+                                                            data-id="{{ session.id }}" data-niveau="{% for level in session.level %}{{ level.id }} {% endfor %}"
+                                                            data-places_libres="{{ session.numberPlaces }}"
+                                                            data-name="{{ session.name }}" data-ridingschool="{{ ridingSchool.id }}"
+                                                            data-price="{{ session.price }}" data-number_places="{{ session.NumberPlaces }}"
+                                                            data-description="{{ session.description }}"
+                                                    >{{ session.name }} {{ session.hour|date('H:i') }}</button>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                {% endfor %}
+            </div>
+
         </div>
 
     </div>
+
+    <div class="modal fade" id="repriseModal" tabindex="-1" role="dialog" aria-labelledby="ModalSessionLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="repriseModalLabel">Reprise du <span id="jour"></span> à <span id="heure"></span>h</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {#<p>Name : <input type="text" id="name" class="form-control"/></p>#}
+                    {#<p>Date : <span id="jour"></span></p>#}
+                    {#<p>Niveau : <input type="" /><span id="niveau"></span></p>#}
+                    {#<p>Nombre de Places : <span id="placesLibres"></span></p>#}
+                    {#<p>Tarif : <span id="formule"></span></p>#}
+                    {{ form_start(updateSessionForm) }}
+                    {{ form_widget(updateSessionForm) }}
+                    {{ form_end(updateSessionForm) }}
+
+                    <h4>Déjà inscrits :</h4>
+
+                    <div id="inscrits">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Prénom</th>
+                                <th>Nom</th>
+                                <th>ecole</th>
+                                <th>tel</th>
+                                <th>email</th>
+                                <th>cheque</th>
+                                <th>suppr</th>
+                            </tr>
+                            </thead>
+                            <tr>
+                                <td>Prénom</td>
+                                <td>Nom</td>
+                                <td>ecole</td>
+                                <td>07 50 40 26 00</td>
+                                <td>aymericboi@etu.univ-lyon1.fr</td>
+                                <td><button class="btn btn-dark">OK</button></td>
+                                <td><button class="btn btn-danger">X</button></td>
+                            </tr>
+
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <div class="container-fluid" style="border: 1px solid black; margin-bottom: 20px; padding: 5px;">
         Creation de Séance
         {{ form_start(createSessionForm) }}
@@ -38,5 +123,82 @@
         {{ form_end(createSessionForm) }}
     </div>
 
+<style>
+    .modal-dialog{
+        width: 80% !important;
+        max-width: 100% !important;
+    }
 
+    #update_user div, #create_user div{
+        width:50%;
+        display: inline-block;
+    }
+</style>
 {% endblock body %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function() {
+
+
+            $('#repriseModal').on('hide.bs.modal', function (e) {
+                var modal = $(this)
+                modal.find('form').attr('action', '{{ url('update_session') }}')
+            })
+            $('#repriseModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget) // Button that triggered the modal
+                var places_libres = button.data('places_libres') // Extract info from data-* attributes
+                var niveau = button.data('niveau') // Extract info from data-* attributes
+                var heure = button.data('heure') // Extract info from data-* attributes
+                // var name = button.data('name')
+                // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+                // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+
+                var name = button.data('name')
+                var ridingSchool = button.data('ridingschool')
+                var id = button.data('id')
+                var jour = button.data('jour')
+                var hour = parseInt(heure.slice(0,2))
+                var minute = parseInt(heure.slice(3,5))
+                var price = button.data('price')
+                var nbPlaces = button.data('number_places')
+                var description = button.data('description')
+                niveaux = niveau.split(' ')
+                var modal = $(this)
+
+                modal.find('#placesLibres').text(places_libres)
+                modal.find('#niveau').text(niveau)
+                modal.find('#heure').text(heure)
+
+                //put the update id in the form action
+                //NOT WORKING =========================================
+                //NOT WORKING =========================================
+                var leboolean;
+                niveaux.forEach(function(niveau, index){
+                    leboolean  = false;
+                    if(niveau == index-1)
+                        leboolean = true;
+                    document.getElementById( 'update_session_level' ).options[index].selected = leboolean
+                })
+                //NOT WORKING =========================================
+                //NOT WORKING =========================================
+
+                modal.find('#update_session_ridingSchool').val(ridingSchool)
+                modal.find('#id_reprise').val(id)
+                modal.find('#update_session_day').val(jour)
+                modal.find('#jour').text(jour)
+                modal.find('#update_session_hour_hour').val(hour)
+                modal.find('#update_session_hour_minute').val(minute)
+                modal.find('#update_session_price').val(price)
+                modal.find('#update_session_number_places').val(nbPlaces)
+                modal.find('#update_session_description').val(description)
+
+                var previous_action = modal.find('form').attr('action')
+                modal.find('form').attr('action', previous_action+'/'+id)
+
+                modal.find('#update_session_name').val(name)
+            })
+        })
+
+    </script>
+{% endblock %}

@@ -8,6 +8,7 @@ use App\Entity\Session;
 use App\Entity\User;
 use App\Form\CreateSessionType;
 use App\Form\CreateUserType;
+use App\Form\UpdateSessionType;
 use App\Form\UpdateUserType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -137,11 +138,15 @@ class AdminController extends AbstractController
         $sessions = $this->getDoctrine()
             ->getRepository(Session::class)
             ->findAll();
+        $days = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
         $createSessionForm = $this->createForm(CreateSessionType::class, null, ['action'=>$this->generateUrl('add_session')]);
+        $updateSessionForm = $this->createForm(UpdateSessionType::class, null, ['action'=>$this->generateUrl('update_session'), 'method'=>'POST']);
         return $this->render('administration/gestion_seance.html.twig', [
             'createSessionForm'=>$createSessionForm->createView(),
             'sessions'=>$sessions,
-            'ridingSchools'=>$ridingSchools
+            'ridingSchools'=>$ridingSchools,
+            'days'=>$days,
+            'updateSessionForm'=>$updateSessionForm->createView()
         ]);
     }
 
@@ -152,7 +157,6 @@ class AdminController extends AbstractController
      */
     public function add_session(Request $request){
         $form = $this->createForm(CreateSessionType::class);
-//        dd($request);
 
         $form->handleRequest($request);
         if($form->isSubmitted()){
@@ -167,6 +171,29 @@ class AdminController extends AbstractController
         else{
             dd($form, $request);
         }
+    }
+
+    /**
+     * @param Request $request
+     * @Route("/admin/gestion_sessions/update_session/{id}", name="update_session", methods={"POST"}, defaults={"id"=null})
+     */
+    public function update_session(request $request, $id){
+
+        $session = $this->getDoctrine()->getRepository(Session::class)->find($id);
+        $form = $this->createForm(UpdateSessionType::class, $session);
+        $form->handleRequest($request);
+        if($form->isSubmitted()){
+            $entityManager = $this->getDoctrine()->getManager();
+            $session = $form->getData();
+            $entityManager->persist($session);
+            $entityManager->flush();
+            return $this->redirectToRoute('admin_sessions');
+        }
+        else{
+            dd($form, $request);
+        }
+        dd($session);
+        
     }
 
     public function del_session(){
